@@ -1,7 +1,7 @@
 import { formatBytes } from '../utils';
 import { uploadFile } from '../apis/files';
 import { ref } from 'vue';
-import { signedPutUrl } from '../apis/files';
+import { generatePutSignedUrl } from '../apis/files';
 
 /** 
  * @param { Object } ref - vue ref for the input value
@@ -31,7 +31,7 @@ export default function (inputElRef, options = {}) {
                 input.value.value = null;
                 return;
             }
-            const data = await signedPutUrl({
+            const data = await generatePutSignedUrl({
                 key: `${Date.now()}-${file.value.name}`,
                 contentType: file.value.type
             })

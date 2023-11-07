@@ -3,7 +3,7 @@ const path = require('path');
 const FilesModel = require('./../models/file');
 const { UPLOADS_PATH } = require('./../constants');
 const formidable = require('formidable').formidable;
-const { getObjectUrl, putObjectUrl } = require('../services/s3');
+const { generateGetSignedUrl, generatePutSignedUrl } = require('../services/s3');
 
 
 exports.getFiles = async (req, res) => {
@@ -94,10 +94,10 @@ exports.signedGetUrl = async (req, res) => {
 }
 
 
-exports.signedPutUrl = async (req, res) => {
+exports.generatePutSignedUrl = async (req, res) => {
     try {
         let { key, contentType } = req.body;
-        const url = await putObjectUrl(key, contentType);
+        const url = await generatePutSignedUrl(key, contentType);
         console.log('url', url);
         res.status(200).json({ success: true, data: { url } });
     } catch (error) {

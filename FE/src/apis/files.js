@@ -41,8 +41,8 @@ export const deleteFileById = (id) => {
         .then(data => data)
 }
 
-export const signedPutUrl = (data) => {
-    let url = BASE_URL + '/files/signed-put-url'
+export const generatePutSignedUrl = (data) => {
+    let url = BASE_URL + '/files/generate-put-signed-url'
     return fetch(url, {
         method: 'POST',
         body: JSON.stringify(data),

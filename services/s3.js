@@ -11,7 +11,7 @@ const s3Client = new S3Client({
     }
 })
 
-exports.getObjectUrl = async function (Key) {
+exports.generateGetSignedUrl = async function (Key) {
     try {
         const command = new GetObjectCommand({
             Bucket: process.env.bucketName,
@@ -24,7 +24,7 @@ exports.getObjectUrl = async function (Key) {
     }
 }
 
-exports.putObjectUrl = async function (Key, ContentType) {
+exports.generatePutSignedUrl = async function (Key, ContentType) {
     try {
         const command = new PutObjectCommand({
             Bucket: process.env.bucketName,
