@@ -37,7 +37,6 @@ const input = ref(null);
 const onUploadSuccess = data => {
     emit('upload', data.data);
     console.log(input);
-    input.value.value = null;
 }
 const { isUploading, progress, addNewFile } = useFile(input, { onUploadSuccess });
 </script>

@@ -1,6 +1,7 @@
 import { formatBytes } from '../utils';
 import { uploadFile } from '../apis/files';
 import { ref } from 'vue';
+import { signedPutUrl } from '../apis/files';
 
 /** 
  * @param { Object } ref - vue ref for the input value
@@ -22,33 +23,37 @@ export default function (inputElRef, options = {}) {
         progress.value = (e.loaded / e.total) * 100;
         options.onProgress?.apply(e);
     };
-    const addNewFile = (e) => {
-        file.value = e.target.files[0];
-        if (file.value.size > options.MAX_FILE_SIZE) {
-            alert(`File size more than ${formatBytes(options.MAX_FILE_SIZE)}`);
-            input.value.value = null;
-            return;
+    const addNewFile = async (e) => {
+        try {
+            file.value = e.target.files[0];
+            if (file.value.size > options.MAX_FILE_SIZE) {
+                alert(`File size more than ${formatBytes(options.MAX_FILE_SIZE)}`);
+                input.value.value = null;
+                return;
+            }
+            const data = await signedPutUrl({
+                key: `${Date.now()}-${file.value.name}`,
+                contentType: file.value.type
+            })
+            let url = data.data.url;
+            progress.value = 0;
+            isUploading.value = true;
+            isUploaded.value = false;
+            let formData = new FormData();
+            formData.append("image", file.value);
+            let uploadRes = await uploadFile(url, formData, onProgress);
+            isUploading.value = false;
+            isUploaded.value = true;
+            progress.value = 100;
+            inputElRef.value.value = null;
+            options.onUploadSuccess?.(uploadRes)
+        } catch (error) {
+            isUploading.value = false;
+            isUploaded.value = false;
+            progress.value = 0;
+            inputElRef.value.value = null;
+            console.log(error);
         }
-        progress.value = 0;
-        isUploading.value = true;
-        isUploaded.value = false;
-        let formData = new FormData();
-        formData.append("image", file.value);
-        uploadFile(formData, onProgress)
-            .then(data => {
-                isUploading.value = false;
-                isUploaded.value = true;
-                progress.value = 100;
-                inputElRef.value.value = null;
-                options.onUploadSuccess?.(data)
-            })
-            .catch(err => {
-                isUploading.value = false;
-                isUploaded.value = false;
-                progress.value = 0;
-                inputElRef.value.value = null;
-                console.log(err);
-            })
     };
     return { isUploaded, isUploading, progress, file, addNewFile }
 }

@@ -14,7 +14,7 @@
                 <tbody>
                     <TransitionGroup name="list-animation">
                         <tr v-for="file, index in files" :key="file.id">
-                            <td>{{ file.originalName }}</td>
+                            <td>{{ file.name }}</td>
                             <td>{{ formatBytes(file.size) }}</td>
                             <td>{{ formatDate(file.uploadDate) }}</td>
                             <td class="text-right">

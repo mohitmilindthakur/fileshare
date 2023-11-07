@@ -8,12 +8,6 @@ const FilesModel = sequelize.define('files', {
         primaryKey: true,
         defaultValue: Sequelize.DataTypes.UUIDV4
     },
-
-    // We are storing the file with hashed name in upload folder but we are storing the original name here
-    originalName: {
-        type: Sequelize.DataTypes.STRING,
-        allowNull: false
-    },
     name: {
         type: Sequelize.DataTypes.STRING,
         allowNull: false
@@ -22,14 +16,14 @@ const FilesModel = sequelize.define('files', {
         type: Sequelize.DataTypes.INTEGER,
         allowNull: false
     },
+    s3Key: {
+        type: Sequelize.DataTypes.STRING(500),
+        allowNull: false
+    },
     uploadDate: {
         type: Sequelize.DataTypes.DATE,
         defaultValue: Sequelize.DataTypes.NOW
     },
-    imgLink: {
-        type: Sequelize.DataTypes.STRING(500),
-        allowNull: false
-    }
 }, {
     tabelName: 'files',
     timestamps: false

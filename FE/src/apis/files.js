@@ -7,11 +7,10 @@ export const fetchFiles = () => {
         .then(data => data)
 }
 
-export const uploadFile = (formData, onProgress) => {
+export const uploadFile = (url, formData, onProgress) => {
 
     // using XMLHttpRequest here as finding out file upload progress is not possible using fetch
     // we show the progress bar and update it whenever progress event gets called
-    let url = BASE_URL + '/files'
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.upload.addEventListener('progress', onProgress);
@@ -19,7 +18,7 @@ export const uploadFile = (formData, onProgress) => {
         xhr.addEventListener('load', () => resolve(xhr.response));
         xhr.addEventListener('error', () => reject(new Error('File upload failed')));
         xhr.addEventListener('abort', () => reject(new Error('File upload aborted')));
-        xhr.open('POST', url, true);
+        xhr.open('PUT', url, true);
         xhr.send(formData);
     });
 }
@@ -37,6 +36,19 @@ export const deleteFileById = (id) => {
     let url = BASE_URL + '/files/' + id;
     return fetch(url, {
         method: 'DELETE',
+    })
+        .then(response => response.json())
+        .then(data => data)
+}
+
+export const signedPutUrl = (data) => {
+    let url = BASE_URL + '/files/signed-put-url'
+    return fetch(url, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+            "Content-Type": "application/json",
+        },
     })
         .then(response => response.json())
         .then(data => data)

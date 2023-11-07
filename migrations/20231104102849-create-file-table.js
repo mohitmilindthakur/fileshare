@@ -10,10 +10,6 @@ module.exports = {
         primaryKey: true,
         defaultValue: Sequelize.DataTypes.UUIDV4
       },
-      originalName: {
-        type: Sequelize.DataTypes.STRING,
-        allowNull: false
-      },
       name: {
         type: Sequelize.DataTypes.STRING,
         allowNull: false
@@ -22,14 +18,14 @@ module.exports = {
         type: Sequelize.DataTypes.INTEGER,
         allowNull: false
       },
+      s3Key: {
+        type: Sequelize.DataTypes.STRING(500),
+        allowNull: false
+      },
       uploadDate: {
         type: Sequelize.DataTypes.DATE,
         defaultValue: Sequelize.DataTypes.NOW
       },
-      imgLink: {
-        type: Sequelize.DataTypes.STRING(500),
-        allowNull: false
-      }
     })
   },
 

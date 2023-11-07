@@ -3,6 +3,7 @@ const path = require('path');
 const FilesModel = require('./../models/file');
 const { UPLOADS_PATH } = require('./../constants');
 const formidable = require('formidable').formidable;
+const { getObjectUrl, putObjectUrl } = require('../services/s3');
 
 
 exports.getFiles = async (req, res) => {
@@ -14,30 +15,24 @@ exports.getFiles = async (req, res) => {
         });
         res.status(200).json({ success: true, data: files });
     } catch (error) {
-        res.status(400).json({ success: false, error: error });
+        res.status(400).json({ success: false, message: error?.message });
     }
 }
 
 exports.uploadFile = async (req, res, next) => {
     try {
-        const form = formidable({ uploadDir: UPLOADS_PATH, keepExtensions: true });
-        let [fields, files] = await form.parse(req);
-        let file = files.image[0];
-        let fileInstance = FilesModel.build({
-            name: file.newFilename,
-            size: file.size,
-            originalName: file.originalFilename,
+        let { name, s3Key, size } = req.body;
+        const dbRes = await FilesModel.create({
+            name,
+            size,
+            s3Key
         })
-        fileInstance.imgLink = '/files/' + fileInstance.id;
-        let dbRes = await fileInstance.save();
         res.json({ success: true, data: dbRes.dataValues });
 
     } catch (error) {
-        res.status(400).json({ success: false, message: error });
+        res.status(400).json({ success: false, message: error?.message });
     }
 }
-
-
 
 const getFileInfo = async (id) => {
     try {
@@ -65,7 +60,7 @@ exports.getFileById = async (req, res) => {
         res.sendFile(UPLOADS_PATH + '/' + dbRes.name);
     } catch (error) {
         console.log('-----------------', error);
-        res.status(400).json({ success: false, message: error });
+        res.status(400).json({ success: false, message: error?.message });
     }
 }
 
@@ -90,6 +85,22 @@ exports.deleteFileById = async (req, res) => {
         });
     } catch (error) {
         console.log('-----------------', error);
-        res.status(400).json({ success: false, message: error });
+        res.status(400).json({ success: false, message: error?.message });
+    }
+}
+
+exports.signedGetUrl = async (req, res) => {
+    let { key } = req.body;
+}
+
+
+exports.signedPutUrl = async (req, res) => {
+    try {
+        let { key, contentType } = req.body;
+        const url = await putObjectUrl(key, contentType);
+        console.log('url', url);
+        res.status(200).json({ success: true, data: { url } });
+    } catch (error) {
+        res.status(400).json({ success: false, error: error?.message})
     }
 }
