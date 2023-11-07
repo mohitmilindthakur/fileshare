@@ -28,54 +28,24 @@
     </section>
 </template>
 <script setup>
-import { uploadFile } from '../apis/files';
-import UploadIcon from './../assets/upload.svg'
-import CheckCirclIcon from './../assets/check-circle.svg'
-import DownloadIcon from './../assets/download.svg'
-import { ref } from 'vue';
+import { ref, defineEmits } from 'vue';
+import UploadIcon from './../assets/upload.svg';
+import useFile from '../composables/addFile.js';
 
 const emit = defineEmits(['upload']);
-const MAX_FILE_SIZE = Math.pow(10, 6) * 100; // 200 MB
-const progress = ref(0);
-const isUploading = ref(false);
-const isUploaded = ref(false);
-const file = ref({});
 const input = ref(null);
-const onProgress = e => {
-    progress.value = (e.loaded / e.total) * 100;
-};
-const addNewFile = (e) => {
-    file.value = e.target.files[0];
-    if (file.value.size > MAX_FILE_SIZE) {
-        alert('File size more than 200 MB');
-        input.value.value = null;
-        return;
-    }
-    progress.value = 0;
-    isUploading.value = true;
-    isUploaded.value = false;
-    let formData = new FormData();
-    formData.append("image", file.value);
-    uploadFile(formData, onProgress)
-        .then(data => {
-            setTimeout(() => {
-                isUploading.value = false;
-                isUploaded.value = true;
-                progress.value = 100;
-                input.value.value = null;
-                emit('upload', data.data);
-            }, 500)
-        })
-        .catch(err => {
-            isUploading.value = false;
-            console.log(err)
-        })
-};
+const onUploadSuccess = data => {
+    emit('upload', data.data);
+    console.log(input);
+    input.value.value = null;
+}
+const { isUploading, progress, addNewFile } = useFile(input, { onUploadSuccess });
 </script>
 <style scoped>
 .progress-bar {
     transition: width .5s ease-out;
 }
+
 .upload-message {
     display: flex;
     gap: 8px;
@@ -89,7 +59,6 @@ const addNewFile = (e) => {
     width: 0;
     overflow: hidden;
 }
-.file-input-label {
 
-}
+.file-input-label {}
 </style>

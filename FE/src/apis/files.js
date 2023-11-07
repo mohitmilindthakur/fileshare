@@ -8,13 +8,10 @@ export const fetchFiles = () => {
 }
 
 export const uploadFile = (formData, onProgress) => {
+
+    // using XMLHttpRequest here as finding out file upload progress is not possible using fetch
+    // we show the progress bar and update it whenever progress event gets called
     let url = BASE_URL + '/files'
-    // return fetch(url, {
-    //     method: 'POST',
-    //     body: formData
-    // })
-    //     .then(response => response.json())
-    //     .then(data => data)
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.upload.addEventListener('progress', onProgress);

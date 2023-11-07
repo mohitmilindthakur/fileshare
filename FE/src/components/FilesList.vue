@@ -12,19 +12,21 @@
 
                 </thead>
                 <tbody>
-                    <tr v-for="file, index in files" :id="file.id">
-                        <td>{{ file.originalName }}</td>
-                        <td>{{ formatBytes(file.size) }}</td>
-                        <td>{{ formatDate(file.uploadDate) }}</td>
-                        <td class="text-right">
-                            <div class="buttons d-flex align-items-center justify-content-end">
-                                <a class="btn btn-primary btn-sm" :href="`${BASE_URL}${file.imgLink}`"
-                                    :download="file.originalName">Download</a>
-                                <button v-if="store.isAdmin" class="btn btn-danger btn-sm ml-2"
-                                    @click="deleteFile(file, index)">Delete</button>
-                            </div>
-                        </td>
-                    </tr>
+                    <TransitionGroup name="list-animation">
+                        <tr v-for="file, index in files" :key="file.id">
+                            <td>{{ file.originalName }}</td>
+                            <td>{{ formatBytes(file.size) }}</td>
+                            <td>{{ formatDate(file.uploadDate) }}</td>
+                            <td class="text-right">
+                                <div class="buttons d-flex align-items-center justify-content-end">
+                                    <a class="btn btn-primary btn-sm" :href="`${BASE_URL}${file.imgLink}`"
+                                        :download="file.originalName">Download</a>
+                                    <button v-if="store.isAdmin" class="btn btn-danger btn-sm ml-2"
+                                        @click="deleteFile(file, index)">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </TransitionGroup>
                 </tbody>
             </table>
             <Transition name="fade">
@@ -67,6 +69,7 @@ const deleteFile = async (file, index) => {
 .files-table {
     margin: 0 auto;
     border-collapse: collapse;
+    overflow: visible;
 
     td {
         vertical-align: middle;
