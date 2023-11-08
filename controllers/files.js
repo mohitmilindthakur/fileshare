@@ -98,7 +98,6 @@ exports.generatePutSignedUrl = async (req, res) => {
     try {
         let { key, contentType } = req.body;
         const url = await generatePutSignedUrl(key, contentType);
-        console.log('url', url);
         res.status(200).json({ success: true, data: { url } });
     } catch (error) {
         res.status(400).json({ success: false, error: error?.message})
