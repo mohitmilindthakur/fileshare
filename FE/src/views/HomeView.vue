@@ -1,14 +1,15 @@
 <script setup>
 import FilesList from '../components/FilesList.vue';
 import AddFile from '../components/AddFile.vue';
-import { fetchFiles } from '../apis/files';
-import { ref } from 'vue';
+import { ref, inject } from 'vue';
 import { useUserStore } from '../stores/user';
 
 const files = ref([]);
 const isFilesLoading = ref(true);
+const $api = inject('$api');
+console.log($api);
 
-fetchFiles()
+$api.files.fetchFiles()
   .then(data => {
     files.value = data.data;
     isFilesLoading.value = false;
