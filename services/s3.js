@@ -23,12 +23,14 @@ exports.generateGetSignedUrl = async function (Key) {
     }
 }
 
-exports.generatePutSignedUrl = async function (Key, ContentType) {
+exports.generatePutSignedUrl = async function (Key, ContentType, filename) {
     try {
+        console.log(`attachment;filename="${filename}"`);
         const command = new PutObjectCommand({
             Bucket: process.env.bucketName,
             Key,
-            ContentType
+            ContentType,
+            ContentDisposition: `attachment;filename="${filename}"`
         })
         const url = await getSignedUrl(s3Client, command);
         return url;

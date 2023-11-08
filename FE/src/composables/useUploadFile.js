@@ -34,7 +34,8 @@ export default function (inputElRef, options = {}) {
         let s3Key = `${Date.now()}-${file.value.name}`
         const data = await generatePutSignedUrl({
             key: s3Key,
-            contentType: file.value.type
+            contentType: file.value.type,
+            filename: file.value.name
         })
         let uploadUrl = data.data.url;
         return { uploadUrl, s3Key };
@@ -49,16 +50,13 @@ export default function (inputElRef, options = {}) {
             progress.value = 0;
             isUploading.value = true;
             isUploaded.value = false;
-            let formData = new FormData();
-            formData.append("image", file.value);
-            let uploadRes = await uploadFileToS3(uploadUrl, formData, onProgress);
-            console.log(uploadRes);
+            console.log(file.value);
+            await uploadFileToS3(uploadUrl, file.value, onProgress);
             let response = await fileInfoToServer({
                 s3Key: s3Key,
                 size: file.value.size,
                 name: file.value.name
             })
-            console.log(response);
             isUploading.value = false;
             isUploaded.value = true;
             progress.value = 100;

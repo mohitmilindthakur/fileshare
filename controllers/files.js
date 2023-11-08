@@ -3,7 +3,7 @@ const path = require('path');
 const FilesModel = require('./../models/file');
 const { UPLOADS_PATH } = require('./../constants');
 const formidable = require('formidable').formidable;
-const { generateGetSignedUrl, generatePutSignedUrl } = require('../services/s3');
+const { generateGetSignedUrl, generatePutSignedUrl, deleteObject } = require('../services/s3');
 
 
 exports.getFiles = async (req, res) => {
@@ -44,7 +44,7 @@ const getFileInfo = async (id) => {
         let dbRes = await FilesModel.findByPk(id);
         return dbRes;
     } catch (error) {
-        return null;
+       throw new Error(error && error.message);
     }
 }
 
@@ -73,33 +73,37 @@ exports.deleteFileById = async (req, res) => {
             res.status(400).json({ success: false, error: { message: 'No ID' } })
         }
         let fileInfo = await getFileInfo(id);
-        console.log('fileInfo', fileInfo);
         if (!fileInfo) {
-            throw new Error('No file info found')
+            throw new Error('No file info found');
         }
+        await deleteObject(fileInfo.s3Key);
         let dbRes = await FilesModel.destroy({
             where: {
                 id
             }
         });
-        fs.rm(path.join(UPLOADS_PATH, fileInfo.name), () => {
-            res.status(200).json({ success: true, message: 'Deleted' });
-        });
+        res.status(200).json({ success: true, data: dbRes});
     } catch (error) {
         console.log('-----------------', error);
         res.status(400).json({ success: false, message: error?.message });
     }
 }
 
-exports.signedGetUrl = async (req, res) => {
-    let { key } = req.body;
-}
-
-
 exports.generatePutSignedUrl = async (req, res) => {
     try {
-        let { key, contentType } = req.body;
-        const url = await generatePutSignedUrl(key, contentType);
+        let { key, contentType, filename } = req.body;
+        console.log(key, contentType);
+        const url = await generatePutSignedUrl(key, contentType, filename);
+        res.status(200).json({ success: true, data: { url } });
+    } catch (error) {
+        res.status(400).json({ success: false, error: error?.message})
+    }
+}
+
+exports.generateGetSignedUrl = async (req, res) => {
+    try {
+        let { key } = req.body;
+        const url = await generateGetSignedUrl(key);
         res.status(200).json({ success: true, data: { url } });
     } catch (error) {
         res.status(400).json({ success: false, error: error?.message})

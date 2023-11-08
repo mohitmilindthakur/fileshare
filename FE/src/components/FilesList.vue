@@ -19,8 +19,7 @@
                             <td>{{ formatDate(file.uploadDate) }}</td>
                             <td class="text-right">
                                 <div class="buttons d-flex align-items-center justify-content-end">
-                                    <a class="btn btn-primary btn-sm" :href="`${BASE_URL}${file.imgLink}`"
-                                        :download="file.originalName">Download</a>
+                                    <button class="btn btn-primary btn-sm" @click="downloadFile(file)">Download</button>
                                     <button v-if="store.isAdmin" class="btn btn-danger btn-sm ml-2"
                                         @click="deleteFile(file, index)">Delete</button>
                                 </div>
@@ -39,12 +38,12 @@
     </section>
 </template>
 <script setup>
-import { BASE_URL } from '../apis';
-import { deleteFileById } from '../apis/files';
+import { deleteFileById, generateGetSignedUrl } from '../apis/files';
 import { defineEmits } from 'vue';
 import EmptyTableImage from './../assets/empty.svg';
 import { useUserStore } from './../stores/user'
 import { formatDate, formatBytes } from '../utils';
+
 defineProps({
     files: Array,
     isFilesLoading: Boolean
@@ -58,6 +57,22 @@ const deleteFile = async (file, index) => {
         emit('delete', index);
     } catch (error) {
         console.log(error);
+    }
+}
+
+const downloadFile = async (file) => {
+    try {
+        let response = await generateGetSignedUrl({ key: file.s3Key });
+        let url = response.data.url;
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        // the filename you want
+        a.download = file.name;
+        document.body.appendChild(a);
+        a.click();
+    } catch (error) {
+        console.log('error', error);
     }
 }
 </script>
