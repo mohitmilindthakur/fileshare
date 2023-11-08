@@ -1,5 +1,5 @@
 import { formatBytes } from '../utils';
-import { uploadFileToS3, generatePutSignedUrl } from '../apis/files';
+import { uploadFileToS3, generatePutSignedUrl, fileInfoToServer } from '../apis/files';
 import { ref } from 'vue';
 
 /** 
@@ -31,12 +31,13 @@ export default function (inputElRef, options = {}) {
         return true;
     }
     const getSignedUrl = async (file) => {
+        let s3Key = `${Date.now()}-${file.value.name}`
         const data = await generatePutSignedUrl({
-            key: `${Date.now()}-${file.value.name}`,
+            key: s3Key,
             contentType: file.value.type
         })
-        let url = data.data.url;
-        return url;
+        let uploadUrl = data.data.url;
+        return { uploadUrl, s3Key };
     }
     const uploadFile = async (e) => {
         try {
@@ -44,18 +45,25 @@ export default function (inputElRef, options = {}) {
             if (!validateFile(file)) {
                 return;
             }
-            let uploadUrl = await getSignedUrl(file);
+            let { uploadUrl, s3Key } = await getSignedUrl(file);
             progress.value = 0;
             isUploading.value = true;
             isUploaded.value = false;
             let formData = new FormData();
             formData.append("image", file.value);
             let uploadRes = await uploadFileToS3(uploadUrl, formData, onProgress);
+            console.log(uploadRes);
+            let response = await fileInfoToServer({
+                s3Key: s3Key,
+                size: file.value.size,
+                name: file.value.name
+            })
+            console.log(response);
             isUploading.value = false;
             isUploaded.value = true;
             progress.value = 100;
             inputElRef.value.value = null;
-            options.onUploadSuccess?.(uploadRes)
+            options.onUploadSuccess?.(response)
         } catch (error) {
             isUploading.value = false;
             isUploaded.value = false;

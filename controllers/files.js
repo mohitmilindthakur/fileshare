@@ -22,6 +22,8 @@ exports.getFiles = async (req, res) => {
 exports.uploadFile = async (req, res, next) => {
     try {
         let { name, s3Key, size } = req.body;
+        console.log(req.body);
+        console.log('s3Key', s3Key);
         const dbRes = await FilesModel.create({
             name,
             size,

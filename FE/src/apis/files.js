@@ -23,6 +23,18 @@ export const uploadFileToS3 = (url, formData, onProgress) => {
     });
 }
 
+export const fileInfoToServer = (body) => {
+    let url = BASE_URL + '/files';
+    return fetch(url, {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body)
+    })
+        .then(res => res.json())
+        .then(data => data)
+}
 export const downloadFileById = (id) => {
     let url = BASE_URL + '/files/' + id;
     return fetch(url, {
