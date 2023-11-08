@@ -21,7 +21,7 @@
                         Upload File
                     </label>
                     <div>Upto 200 mb</div>
-                    <input ref="input" class="" id="file-input" type="file" @input="addNewFile">
+                    <input ref="input" class="" id="file-input" type="file" @input="uploadFile">
                 </form>
             </div>
         </div>
@@ -30,7 +30,7 @@
 <script setup>
 import { ref, defineEmits } from 'vue';
 import UploadIcon from './../assets/upload.svg';
-import useFile from '../composables/addFile.js';
+import useUploadFile from '../composables/useUploadFile.js';
 
 const emit = defineEmits(['upload']);
 const input = ref(null);
@@ -38,7 +38,7 @@ const onUploadSuccess = data => {
     emit('upload', data.data);
     console.log(input);
 }
-const { isUploading, progress, addNewFile } = useFile(input, { onUploadSuccess });
+const { isUploading, progress, uploadFile } = useUploadFile(input, { onUploadSuccess });
 </script>
 <style scoped>
 .progress-bar {

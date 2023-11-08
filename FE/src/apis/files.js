@@ -7,7 +7,7 @@ export const fetchFiles = () => {
         .then(data => data)
 }
 
-export const uploadFile = (url, formData, onProgress) => {
+export const uploadFileToS3 = (url, formData, onProgress) => {
 
     // using XMLHttpRequest here as finding out file upload progress is not possible using fetch
     // we show the progress bar and update it whenever progress event gets called

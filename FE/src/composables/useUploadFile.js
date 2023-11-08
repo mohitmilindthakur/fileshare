@@ -1,14 +1,13 @@
 import { formatBytes } from '../utils';
-import { uploadFile } from '../apis/files';
+import { uploadFileToS3, generatePutSignedUrl } from '../apis/files';
 import { ref } from 'vue';
-import { generatePutSignedUrl } from '../apis/files';
 
 /** 
- * @param { Object } ref - vue ref for the input value
+ * @param { Object } inputElRef - vue ref for the input value
  * @param { Object } options - various properties and callbacks
  * @param { Number } options.MAX_FILE_SIZE - max file size for upload
- * @param { Function } options.onUploadSuccess - max file size for upload
- * @param { Function } options.onProgress - max file size for upload
+ * @param { Function } options.onUploadSuccess - callback function on upload success
+ * @param { Function } options.onProgress - callback function whenever progress event gets called
 */
 export default function (inputElRef, options = {}) {
     // DEFAULTS
@@ -23,25 +22,35 @@ export default function (inputElRef, options = {}) {
         progress.value = (e.loaded / e.total) * 100;
         options.onProgress?.apply(e);
     };
-    const addNewFile = async (e) => {
+    const validateFile = file => {
+        if (file.value.size > options.MAX_FILE_SIZE) {
+            alert(`File size more than ${formatBytes(options.MAX_FILE_SIZE)}`);
+            inputElRef.value.value = null;
+            return false;
+        }
+        return true;
+    }
+    const getSignedUrl = async (file) => {
+        const data = await generatePutSignedUrl({
+            key: `${Date.now()}-${file.value.name}`,
+            contentType: file.value.type
+        })
+        let url = data.data.url;
+        return url;
+    }
+    const uploadFile = async (e) => {
         try {
             file.value = e.target.files[0];
-            if (file.value.size > options.MAX_FILE_SIZE) {
-                alert(`File size more than ${formatBytes(options.MAX_FILE_SIZE)}`);
-                input.value.value = null;
+            if (!validateFile(file)) {
                 return;
             }
-            const data = await generatePutSignedUrl({
-                key: `${Date.now()}-${file.value.name}`,
-                contentType: file.value.type
-            })
-            let url = data.data.url;
+            let uploadUrl = await getSignedUrl(file);
             progress.value = 0;
             isUploading.value = true;
             isUploaded.value = false;
             let formData = new FormData();
             formData.append("image", file.value);
-            let uploadRes = await uploadFile(url, formData, onProgress);
+            let uploadRes = await uploadFileToS3(uploadUrl, formData, onProgress);
             isUploading.value = false;
             isUploaded.value = true;
             progress.value = 100;
@@ -55,5 +64,5 @@ export default function (inputElRef, options = {}) {
             console.log(error);
         }
     };
-    return { isUploaded, isUploading, progress, file, addNewFile }
+    return { isUploaded, isUploading, progress, file, uploadFile }
 }
