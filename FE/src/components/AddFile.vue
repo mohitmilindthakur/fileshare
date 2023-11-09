@@ -31,12 +31,19 @@
 import { ref, defineEmits } from 'vue';
 import UploadIcon from './../assets/upload.svg';
 import useUploadFile from '../composables/useUploadFile.js';
+import Swal from 'sweetalert2';
 
 const emit = defineEmits(['upload']);
 const input = ref(null);
 const onUploadSuccess = data => {
     emit('upload', data.data);
-    console.log(input);
+    Swal.fire({
+        position: 'top-right',
+        title: `${data.data.name} uploaded successfully`,
+        showConfirmButton: false,
+        timer: 1500,
+        icon: "success"
+    })
 }
 const { isUploading, progress, uploadFile } = useUploadFile(input, { onUploadSuccess });
 </script>

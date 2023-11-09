@@ -43,6 +43,7 @@ import { defineEmits } from 'vue';
 import EmptyTableImage from './../assets/empty.svg';
 import { useUserStore } from './../stores/user'
 import { formatDate, formatBytes } from '../utils';
+import Swal from 'sweetalert2';
 
 defineProps({
     files: Array,
@@ -53,8 +54,27 @@ const store = useUserStore();
 
 const deleteFile = async (file, index) => {
     try {
-        let res = await deleteFileById(file.id);
-        emit('delete', index);
+        Swal.fire({
+            title: "Confirm Delete ?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                let res = await deleteFileById(file.id);
+                emit('delete', index);
+                Swal.fire({
+                    position: 'top-right',
+                    title: `${file.name} deleted successfully`,
+                    showConfirmButton: false,
+                    timer: 1500,
+                    icon: "success"
+                })
+            }
+        });
     } catch (error) {
         console.log(error);
     }
