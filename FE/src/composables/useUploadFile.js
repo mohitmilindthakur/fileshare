@@ -20,7 +20,7 @@ export default function (inputElRef, options = {}) {
     const file = ref({});
     const onProgress = e => {
         progress.value = (e.loaded / e.total) * 100;
-        options.onProgress?.apply(e);
+        options.onProgress?.(e);
     };
     const validateFile = file => {
         if (file.value.size > options.MAX_FILE_SIZE) {

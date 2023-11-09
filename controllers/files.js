@@ -4,6 +4,7 @@ const FilesModel = require('./../models/file');
 const { UPLOADS_PATH } = require('./../constants');
 const formidable = require('formidable').formidable;
 const { generateGetSignedUrl, generatePutSignedUrl, deleteObject } = require('../services/s3');
+const filesQueue = require('./../workers/files/index');
 
 
 exports.getFiles = async (req, res) => {
@@ -76,12 +77,14 @@ exports.deleteFileById = async (req, res) => {
         if (!fileInfo) {
             throw new Error('No file info found');
         }
-        await deleteObject(fileInfo.s3Key);
+        // await deleteObject(fileInfo.s3Key);
         let dbRes = await FilesModel.destroy({
             where: {
                 id
             }
         });
+        await filesQueue.add(`delete ${fileInfo.s3Key}`, { s3Key: fileInfo.s3Key });
+        console.log('DELETE ADDED IN THE QUEUE', fileInfo.s3Key);
         res.status(200).json({ success: true, data: dbRes});
     } catch (error) {
         console.log('-----------------', error);
