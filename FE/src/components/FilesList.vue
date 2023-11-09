@@ -71,6 +71,7 @@ const downloadFile = async (file) => {
         a.download = file.name;
         document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
     } catch (error) {
         console.log('error', error);
     }

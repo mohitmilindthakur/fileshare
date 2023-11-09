@@ -31,11 +31,12 @@ const store = useUserStore();
 
 <template>
   <div class="container">
-  <div class="admin-toggle d-flex align-items-center mt-2">
-    <input type="checkbox" id="toggle-admin" name="toggle-admin" class="form-input-check" v-model="store.isAdmin" @input="store.toggleIsAdmin">
-    <label class="ml-2 mb-0" for="toggle-admin">Toggle Admin</label>
+    <div class="admin-toggle d-flex align-items-center mt-2">
+      <input type="checkbox" id="toggle-admin" name="toggle-admin" class="form-input-check" v-model="store.isAdmin"
+        @input="store.toggleIsAdmin">
+      <label class="ml-2 mb-0" for="toggle-admin">Toggle Admin</label>
+    </div>
+    <AddFile @upload="onUpload" />
+    <FilesList :files="files" @delete="onDelete" :isFilesLoading="isFilesLoading" />
   </div>
-  <AddFile @upload="onUpload" />
-  <FilesList :files="files" @delete="onDelete" :isFilesLoading="isFilesLoading"/>
-</div>
 </template>

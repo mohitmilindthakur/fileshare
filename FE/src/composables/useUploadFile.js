@@ -12,7 +12,7 @@ import { ref } from 'vue';
 export default function (inputElRef, options = {}) {
     // DEFAULTS
     // default max file size 200MB
-    !options.MAX_FILE_SIZE && (options.MAX_FILE_SIZE = Math.pow(10, 6) * 100);
+    !options.MAX_FILE_SIZE && (options.MAX_FILE_SIZE = Math.pow(10, 6) * 200);
 
     const progress = ref(0);
     const isUploading = ref(false);
@@ -40,7 +40,15 @@ export default function (inputElRef, options = {}) {
         let uploadUrl = data.data.url;
         return { uploadUrl, s3Key };
     }
+    const resetFile = () => {
+        isUploading.value = false;
+        isUploaded.value = false;
+        progress.value = 0;
+        inputElRef.value.value = null;
+    }
     const uploadFile = async (e) => {
+        let isUploadedToS3 = false;
+        let isDataAddedInDb = false;
         try {
             file.value = e.target.files[0];
             if (!validateFile(file)) {
@@ -50,23 +58,24 @@ export default function (inputElRef, options = {}) {
             progress.value = 0;
             isUploading.value = true;
             isUploaded.value = false;
-            console.log(file.value);
             await uploadFileToS3(uploadUrl, file.value, onProgress);
+            isUploadedToS3 = true;
             let response = await fileInfoToServer({
                 s3Key: s3Key,
                 size: file.value.size,
                 name: file.value.name
             })
+            isDataAddedInDb = true;
             isUploading.value = false;
             isUploaded.value = true;
             progress.value = 100;
             inputElRef.value.value = null;
             options.onUploadSuccess?.(response)
         } catch (error) {
-            isUploading.value = false;
-            isUploaded.value = false;
-            progress.value = 0;
-            inputElRef.value.value = null;
+            if (isUploadedToS3 && !isDataAddedInDb) {
+
+            }
+            resetFile()
             console.log(error);
         }
     };
