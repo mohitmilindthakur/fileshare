@@ -16,12 +16,13 @@
             </div>
             <div class="col-sm-4 text-right">
                 <form @submit.prevent>
-                    <label for="file-input" class="file-input-label btn btn-primary">
+                    <label for="file-input" class="file-input-label btn btn-primary" :class="{ disabled: isUploading }">
                         <img :src="UploadIcon" />
                         Upload File
                     </label>
                     <div>Upto 200 mb</div>
-                    <input ref="input" class="" id="file-input" type="file" @input="uploadFile">
+                    <input :disabled="isUploading" ref="input" class="input-upload" id="file-input" type="file"
+                        @input="uploadFile">
                 </form>
             </div>
         </div>
@@ -45,7 +46,7 @@ const onUploadError = err => {
 
 const { isUploading, progress, uploadFile } = useUploadFile(input, { onUploadSuccess, onUploadError });
 </script>
-<style scoped>
+<style scoped lang="scss">
 .progress-bar {
     transition: width .5s ease-out;
 }
@@ -64,5 +65,10 @@ const { isUploading, progress, uploadFile } = useUploadFile(input, { onUploadSuc
     overflow: hidden;
 }
 
-.file-input-label {}
+.file-input-label {
+    &.disabled {
+        opacity: .5;
+        cursor: not-allowed;
+    }
+}
 </style>
