@@ -4,6 +4,7 @@ import AddFile from '../components/AddFile.vue';
 import { fetchFiles } from '../apis/files';
 import { ref } from 'vue';
 import { useUserStore } from '../stores/user';
+import { showErrorToast } from '../utils/swal';
 
 const files = ref([]);
 const isFilesLoading = ref(true);
@@ -16,6 +17,7 @@ fetchFiles()
   .catch(err => {
     console.log(err);
     isFilesLoading.value = false;
+    showErrorToast(err?.message || 'Error in uploading the file');
   })
 
 const onUpload = data => {

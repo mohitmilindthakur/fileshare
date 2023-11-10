@@ -44,6 +44,7 @@ import EmptyTableImage from './../assets/empty.svg';
 import { useUserStore } from './../stores/user'
 import { formatDate, formatBytes } from '../utils';
 import Swal from 'sweetalert2';
+import { showSuccessToast, showErrorToast } from './../utils/swal';
 
 defineProps({
     files: Array,
@@ -54,7 +55,7 @@ const store = useUserStore();
 
 const deleteFile = async (file, index) => {
     try {
-        Swal.fire({
+        let result = await Swal.fire({
             title: "Confirm Delete ?",
             text: "You won't be able to revert this!",
             icon: "warning",
@@ -62,21 +63,14 @@ const deleteFile = async (file, index) => {
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
             confirmButtonText: "Yes, delete it!"
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                let res = await deleteFileById(file.id);
-                emit('delete', index);
-                Swal.fire({
-                    position: 'top-right',
-                    title: `${file.name} deleted successfully`,
-                    showConfirmButton: false,
-                    timer: 1500,
-                    icon: "success"
-                })
-            }
-        });
-    } catch (error) {
-        console.log(error);
+        })
+        if (result.isConfirmed) {
+            let res = await deleteFileById(file.id);
+            emit('delete', index);
+            showSuccessToast(`${file.name} deleted successfully`)
+        }
+    } catch (err) {
+        showErrorToast(err?.message || 'Error in deleting the file')
     }
 }
 
@@ -92,8 +86,8 @@ const downloadFile = async (file) => {
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-    } catch (error) {
-        console.log('error', error);
+    } catch (err) {
+        showErrorToast(err?.message || 'Error in downloading the file')
     }
 }
 </script>

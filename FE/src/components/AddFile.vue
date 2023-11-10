@@ -31,21 +31,19 @@
 import { ref, defineEmits } from 'vue';
 import UploadIcon from './../assets/upload.svg';
 import useUploadFile from '../composables/useUploadFile.js';
-import Swal from 'sweetalert2';
+import { showSuccessToast, showErrorToast } from './../utils/swal';
 
 const emit = defineEmits(['upload']);
 const input = ref(null);
 const onUploadSuccess = data => {
     emit('upload', data.data);
-    Swal.fire({
-        position: 'top-right',
-        title: `${data.data.name} uploaded successfully`,
-        showConfirmButton: false,
-        timer: 1500,
-        icon: "success"
-    })
+    showSuccessToast(`${data.data.name} uploaded successfully`);
 }
-const { isUploading, progress, uploadFile } = useUploadFile(input, { onUploadSuccess });
+const onUploadError = err => {
+    showErrorToast(err?.message || 'Error in uploading the file');
+}
+
+const { isUploading, progress, uploadFile } = useUploadFile(input, { onUploadSuccess, onUploadError });
 </script>
 <style scoped>
 .progress-bar {

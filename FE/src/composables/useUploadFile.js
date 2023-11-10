@@ -7,6 +7,7 @@ import { ref } from 'vue';
  * @param { Object } options - various properties and callbacks
  * @param { Number } options.MAX_FILE_SIZE - max file size for upload
  * @param { Function } options.onUploadSuccess - callback function on upload success
+ * @param { Function } options.onUploadError - callback function on upload success
  * @param { Function } options.onProgress - callback function whenever progress event gets called
 */
 export default function (inputElRef, options = {}) {
@@ -77,6 +78,7 @@ export default function (inputElRef, options = {}) {
             }
             resetFile()
             console.log(error);
+            options.onUploadError?.(error)
         }
     };
     return { isUploaded, isUploading, progress, file, uploadFile }
