@@ -92,6 +92,10 @@ const downloadFile = async (file) => {
 }
 </script>
 <style lang="scss">
+.files-list-container {
+    background-color: white;
+    box-shadow: 0 5px 5px 5px rgba(0,0,0,.05);
+}
 .table-wrapper {
     overflow-y: auto;
 }
