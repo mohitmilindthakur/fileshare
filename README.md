@@ -7,7 +7,6 @@ Frontend: Vue 3, sweetalert (notifacation popup), pinia (global state management
 Backend: Node JS, MySQL, express, AWS s3, Sequalize(ORM), bullmq (job processing queue)
 
 ## Application Flow
-### Happy flow (assuming no errors in any step)
 
 #### Upload Flow
 1. User has selected file to upload
