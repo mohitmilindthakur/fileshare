@@ -25,4 +25,10 @@ Backend: Node JS, MySQL, express, AWS s3, Sequalize(ORM), bullmq (job processing
 3. On confirming the delete, FE will make an api call to BE
 4. BE will remove the entry from MySQL using Sequalize ORM
 5. On success delete from MySQL, FE will then remove the row from listing
-6. Using bullmq (job processing queue for node), add deletion of that object from s3 in the files-queue
+6. Using bullmq (job processing queue for node), add new job for deletion of that object from s3 in the files-queue
+
+
+#### Download Flow
+1. User clicks the download button from listing
+2. FE makes an api call to BE to generate a get signed url for that object
+3. Once FE gets presigned URL, it downloads the file
