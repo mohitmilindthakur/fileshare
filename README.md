@@ -24,5 +24,5 @@ Backend: Node JS, MySQL, express, AWS s3, Sequalize(ORM), bullmq (job processing
 2. Confirmation popup is displayed
 3. On confirming the delete, FE will make an api call to BE
 4. BE will remove the entry from MySQL using Sequalize ORM
-5. On success delete from MySQL, BE will then remove the row from listing
+5. On success delete from MySQL, FE will then remove the row from listing
 6. Using bullmq (job processing queue for node), add deletion of that object from s3 in the files-queue
