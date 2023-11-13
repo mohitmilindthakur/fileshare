@@ -2,7 +2,7 @@
 Fullstack application for file uploading using Vue 3 (composition API) and Node JS
 
 ## Tech stack and libraries used:
-Frontend: Vue 3, sweetalert (notifacation popup), pinia(global state management, bootstrap4, sass(.scss extension))
+Frontend: Vue 3, sweetalert (notifacation popup), pinia (global state management), bootstrap4, sass(.scss extension)
 
 Backend: Node JS, MySQL, express, AWS s3, Sequalize(ORM), bullmq (job processing queue)
 
